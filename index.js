@@ -3,21 +3,26 @@ const csvParser = require('csv-parser');
 const fs = require('fs');
 
 // MongoDB Connection String
-const MONGO_URI = 'mongodb://localhost:27017/bankdb';
+const MONGO_URI = 'mongodb+srv://usman09salman:9GwIKt11zo70JmCc@dev-mod.gdgin.mongodb.net/dev_trade_risk_golive';
 
 // Define Mongoose Schema
 const bankSchema = new mongoose.Schema({
-    bank: String,
+    name: String,
     city: String,
     branch: String,
     swiftCode: String,
-    country: String
+    country: String,
+    countryFlag: String,
+    email: String,
+    secondaryEmail: String,
+    pocName: String,
+    pocPhone: String,
 }, { versionKey: false });
 
 // Create indexes for different search queries
 bankSchema.index({ country: 1 });              // For searching by country
 bankSchema.index({ country: 1, city: 1 });     // For searching by country and city
-bankSchema.index({ country: 1, city: 1, bank: 1 }); // For searching by country, city and bank
+bankSchema.index({ country: 1, city: 1, name: 1 }); // For searching by country, city and name
 
 const Bank = mongoose.model('Bank', bankSchema);
 
@@ -35,32 +40,43 @@ mongoose.connect(MONGO_URI)
 function processCSV() {
     // each data array of object having bank, city, branch, swiftCode, country keys
     const result = [];
-    const filePath = 'swift_codes.csv';
+    // const filePath = 'swift_codes.csv';
+    const filePath = 'updated_35_banks.csv';
 
     fs.createReadStream(filePath)
         .pipe(csvParser({ separator: ',' })) // Changed to comma separator
         .on('data', async (row) => {
             try {
                 // Check if we're receiving a single field with all values
-                if (row['bank,city,branch,swiftCode,country']) {
+                if (row['name,city,swiftCode,country,countryFlag,email,secondaryEmail,pocName,pocPhone']) {
                     // Split the combined value by commas
-                    const values = row['bank,city,branch,swiftCode,country'].split(',');
+                    const values = row['name,city,swiftCode,country,countryFlag,email,secondaryEmail,pocName,pocPhone'].split(',');
 
                     result.push({
-                        bank: values[0] || '',
+                        name: values[0] || '',
                         city: values[1] || '',
-                        branch: values[2] || '',
-                        swiftCode: values[3] || '',
-                        country: values[4] || ''
+                        swiftCode: values[2] || '',
+                        country: values[3] || '',
+                        countryFlag: values[4] || '',
+                        email: values[5] || '',
+                        secondaryEmail: values[6] || '',
+                        pocName: values[7] || '',
+                        pocPhone: values[8] || '',
+                        isActive: true
                     });
                 } else {
                     // Normal case where fields are already separated
                     result.push({
-                        bank: row.bank || '',
+                        name: row.bank || '',
                         city: row.city || '',
-                        branch: row.branch || '',
                         swiftCode: row.swiftCode || '',
-                        country: row.country || ''
+                        country: row.country || '',
+                        countryFlag: row.countryFlag || '',
+                        email: row.email || '',
+                        secondaryEmail: row.secondaryEmail || '',
+                        pocName: row.pocName || '',
+                        pocPhone: row.pocPhone || '',
+                        isActive: true
                     });
                 }
                 console.log('Processed row');
