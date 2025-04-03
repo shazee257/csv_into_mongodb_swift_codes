@@ -67,7 +67,7 @@ function processCSV() {
                 } else {
                     // Normal case where fields are already separated
                     result.push({
-                        name: row.bank || '',
+                        name: row.name || '',
                         city: row.city || '',
                         swiftCode: row.swiftCode || '',
                         country: row.country || '',
