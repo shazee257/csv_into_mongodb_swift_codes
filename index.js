@@ -2,8 +2,12 @@ const mongoose = require('mongoose');
 const csvParser = require('csv-parser');
 const fs = require('fs');
 
-// MongoDB Connection String
-const MONGO_URI = 'mongodb+srv://usman09salman:9GwIKt11zo70JmCc@dev-mod.gdgin.mongodb.net/dev_trade_risk_golive';
+// staging
+// const MONGO_URI = 'mongodb+srv://anmirza75:Jq4lJKYo2RccCmcL@cluster1.inc5r.mongodb.net/staging_trade_risk_golive?retryWrites=true&w=majority&appName=Cluster1';
+
+// production
+const MONGO_URI = 'mongodb+srv://anmirza75:Jq4lJKYo2RccCmcL@cluster1.inc5r.mongodb.net/trade_risk_golive?retryWrites=true&w=majority&appName=Cluster1';
+
 
 // Define Mongoose Schema
 const bankSchema = new mongoose.Schema({
@@ -17,12 +21,14 @@ const bankSchema = new mongoose.Schema({
     secondaryEmail: String,
     pocName: String,
     pocPhone: String,
-}, { versionKey: false });
+    isActive: { type: Boolean, default: true },
+}, { timestamps: true, versionKey: false });
 
 // Create indexes for different search queries
 bankSchema.index({ country: 1 });              // For searching by country
 bankSchema.index({ country: 1, city: 1 });     // For searching by country and city
 bankSchema.index({ country: 1, city: 1, name: 1 }); // For searching by country, city and name
+bankSchema.index({ swiftCode: 1 });
 
 const Bank = mongoose.model('Bank', bankSchema);
 
@@ -41,7 +47,8 @@ function processCSV() {
     // each data array of object having bank, city, branch, swiftCode, country keys
     const result = [];
     // const filePath = 'swift_codes.csv';
-    const filePath = 'updated_35_banks.csv';
+    // const filePath = 'staging_demo_pakistan.csv';
+    const filePath = 'prod_banks.csv'; // production banks
 
     fs.createReadStream(filePath)
         .pipe(csvParser({ separator: ',' })) // Changed to comma separator
