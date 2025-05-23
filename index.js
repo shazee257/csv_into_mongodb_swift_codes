@@ -7,8 +7,6 @@ const fs = require('fs');
 
 // production
 const MONGO_URI = 'mongodb+srv://anmirza75:Jq4lJKYo2RccCmcL@cluster1.inc5r.mongodb.net/trade_risk_golive?retryWrites=true&w=majority&appName=Cluster1';
-
-
 // Define Mongoose Schema
 const bankSchema = new mongoose.Schema({
     name: String,
